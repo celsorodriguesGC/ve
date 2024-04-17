@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/http/httputil"
 	"os"
 )
 
@@ -13,9 +12,13 @@ var (
 	version string
 )
 
-type data struct {
-	project string
-	vuln    string
+type Data struct {
+	Row []Row `json:"row"`
+}
+
+type Row struct {
+	Project string   `json:"project"`
+	CVEs    []string `json:"cves"`
 }
 
 func main() {
@@ -39,7 +42,7 @@ func writeIgnore(cve []byte) {
 }
 
 func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
-	data := data{}
+	data := Data{}
 	client := http.Client{}
 	url := fmt.Sprintf("%s:%s/%s", serverAddress, serverPort, projectName)
 
@@ -49,16 +52,14 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	b, err := httputil.DumpResponse(resp, true)
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Println(string(b))
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		log.Println(err)
 	}
 
+	for _, vul := range data.Row {
+		fmt.Println(vul.Project)
+	}
 	return []byte("CVE-2022-48174"), nil
 
 }
