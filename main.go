@@ -52,8 +52,11 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 	if err != nil {
 		log.Println(err)
 	}
+	out := fmt.Sprintf("#cves for %s\n", data.Project)
+	for _, cve := range data.Cves {
+		out += cve + "\n"
+	}
 
-	fmt.Println(data.Project)
-	return []byte(data.Project), nil
+	return []byte(out), nil
 
 }
