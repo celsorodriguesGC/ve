@@ -1,6 +1,6 @@
 name: ve
 repository: github.com/<org_name>/<repository_name>
-version: "0.0.7"
+version: "0.0.8"
 usage: Template
 description: |-
   A plugin template
@@ -8,10 +8,10 @@ platforms:
   - selector:
       os: darwin
       arch: arm64
-    uri: https://github.com/celsorodriguesGC/ve/releases/download/v0.0.7/ve_0.0.7_darwin-arm64.tar.gz
+    uri: https://github.com/celsorodriguesGC/ve/releases/download/v0.0.8/ve_0.0.8_darwin-arm64.tar.gz
     bin: ./ve
   - selector:
       os: linux
       arch: amd64
-    uri: https://github.com/celsorodriguesGC/ve/releases/download/v0.0.7/ve_0.0.7_linux-amd64.tar.gz
+    uri: https://github.com/celsorodriguesGC/ve/releases/download/v0.0.8/ve_0.0.8_linux-amd64.tar.gz
     bin: ./ve
