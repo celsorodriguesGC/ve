@@ -56,10 +56,10 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 	if err != nil {
 		log.Println(err)
 	}
-
+	var result string
 	for _, vul := range data.Row {
-		fmt.Println(vul.Project)
+		result = vul.CVEs[0]
 	}
-	return []byte("CVE-2022-48174"), nil
+	return []byte(result), nil
 
 }
