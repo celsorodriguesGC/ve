@@ -49,7 +49,11 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	httputil.DumpResponse(resp, true)
+	b, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(string(b))
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		log.Println(err)
