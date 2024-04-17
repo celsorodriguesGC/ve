@@ -20,7 +20,7 @@ type data struct {
 
 func main() {
 	fmt.Println(version)
-	cve, err := getCVEs()
+	cve, err := getCVEs("http://localhost", "3000", "basket")
 	if err != nil {
 		log.Println(err)
 	}
