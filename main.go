@@ -23,7 +23,7 @@ func main() {
 	fmt.Println(version)
 	cve, err := getCVEs("http://localhost", "3000", "x")
 	if err != nil && errors.Is(err, syscall.ECONNREFUSED) {
-		log.Println(err)
+		log.Println("could not contact the server - is the server reachable?:", err)
 	} else {
 		log.Fatal("could not send the get request:", err)
 	}
