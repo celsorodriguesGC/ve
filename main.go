@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
 )
 
@@ -25,15 +26,6 @@ func main() {
 
 	runScan(os.Args, exec.Command)
 
-	cve, err := getCVEs("http://localhost", "3000", "x")
-	if err != nil && errors.Is(err, syscall.ECONNREFUSED) {
-		log.Println("could not contact the server - is the server reachable?:", err)
-		return
-	} else if err != nil {
-		log.Fatal("could not send the get request:", err)
-		return
-	}
-	writeIgnore(cve)
 }
 
 func writeIgnore(cve []byte) {
@@ -82,6 +74,18 @@ func runScan(args []string, execCmd func(string, ...string) *exec.Cmd) error {
 	for i, arg := range trivyArgs {
 		fmt.Println("The argument", i, "is", arg)
 	}
+
+	log.Println("creating the ignore file")
+	path := strings.ReplaceAll(trivyArgs[2], ":", "")
+	cve, err := getCVEs("http://localhost", "3000", path)
+	if err != nil && errors.Is(err, syscall.ECONNREFUSED) {
+		log.Println("could not contact the server - is the server reachable?:", err)
+		return err
+	} else if err != nil {
+		log.Fatal("could not send the get request:", err)
+		return err
+	}
+	writeIgnore(cve)
 	log.Println("running trivy with args: ", trivyArgs)
 	out, err := execCmd("trivy", trivyArgs...).CombinedOutput()
 	if err != nil {
