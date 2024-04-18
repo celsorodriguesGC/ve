@@ -24,7 +24,8 @@ func main() {
 	cve, err := getCVEs("http://localhost", "3000", "x")
 	if err != nil && errors.Is(err, syscall.ECONNREFUSED) {
 		log.Println("could not contact the server - is the server reachable?:", err)
-	} else {
+		return
+	} else if err != nil {
 		log.Fatal("could not send the get request:", err)
 	}
 	writeIgnore(cve)
