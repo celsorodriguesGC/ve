@@ -49,7 +49,7 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 
 	resp, err := client.Get(url)
 	if err != nil {
-		log.Println(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
