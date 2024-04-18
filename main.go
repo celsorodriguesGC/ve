@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"syscall"
 )
 
@@ -21,12 +22,16 @@ type Data struct {
 
 func main() {
 	fmt.Println(version)
+
+	runScan(os.Args, exec.Command)
+
 	cve, err := getCVEs("http://localhost", "3000", "x")
 	if err != nil && errors.Is(err, syscall.ECONNREFUSED) {
 		log.Println("could not contact the server - is the server reachable?:", err)
 		return
 	} else if err != nil {
 		log.Fatal("could not send the get request:", err)
+		return
 	}
 	writeIgnore(cve)
 }
@@ -66,31 +71,40 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 
 }
 
-// func runScan(args []string, execCmd func(string, ...string) *exec.Cmd) error {
-// 	trivyArgsIndex := findTrivySep(args)
-// 	if trivyArgsIndex < 0 {
-// 		return fmt.Errorf("invalid arguments specified")
-// 	}
+func runScan(args []string, execCmd func(string, ...string) *exec.Cmd) error {
+	trivyArgsIndex := findTrivySep(args)
+	if trivyArgsIndex < 0 {
+		return fmt.Errorf("invalid arguments specified")
+	}
 
-// 	trivyArgs := os.Args[trivyArgsIndex:]
+	trivyArgs := os.Args[trivyArgsIndex:]
 
-// 	fmt.Println("", trivyArgs)
-// 	return nil
-// }
+	for i, arg := range trivyArgs {
+		fmt.Println("The argument", i, "is", arg)
+	}
+	log.Println("running trivy with args: ", trivyArgs)
+	out, err := execCmd("trivy", trivyArgs...).CombinedOutput()
+	if err != nil {
+		return err
+	}
 
-// func findTrivySep(args []string) int {
-// 	for i, a := range args {
-// 		// trivy args separator is "--"
-// 		if a == "--" {
-// 			if i+1 >= len(args) {
-// 				return -1 // bad case if someone specifies no trivy args
-// 			} else {
-// 				return i + 1 // common case with good args
-// 			}
-// 		}
-// 	}
-// 	return -1 // bad case if no trivy sep & args specified
-// }
+	log.Println("trivy returned: ", string(out))
+	return err
+}
+
+func findTrivySep(args []string) int {
+	for i, a := range args {
+		// trivy args separator is "--"
+		if a == "--" {
+			if i+1 >= len(args) {
+				return -1 // bad case if someone specifies no trivy args
+			} else {
+				return i + 1 // common case with good args
+			}
+		}
+	}
+	return -1 // bad case if no trivy sep & args specified
+}
 
 // func containsSlice(haystack []string, needle string) bool {
 // 	for _, item := range haystack {
