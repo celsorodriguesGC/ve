@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"syscall"
 )
 
 var (
@@ -19,9 +21,11 @@ type Data struct {
 
 func main() {
 	fmt.Println(version)
-	cve, err := getCVEs("http://localhost", "3000", "basket")
-	if err != nil {
+	cve, err := getCVEs("http://localhost", "3000", "x")
+	if err != nil && errors.Is(err, syscall.ECONNREFUSED) {
 		log.Println(err)
+	} else {
+		log.Fatal("could not send the get request:", err)
 	}
 	writeIgnore(cve)
 }
@@ -60,3 +64,38 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 	return []byte(out), nil
 
 }
+
+// func runScan(args []string, execCmd func(string, ...string) *exec.Cmd) error {
+// 	trivyArgsIndex := findTrivySep(args)
+// 	if trivyArgsIndex < 0 {
+// 		return fmt.Errorf("invalid arguments specified")
+// 	}
+
+// 	trivyArgs := os.Args[trivyArgsIndex:]
+
+// 	fmt.Println("", trivyArgs)
+// 	return nil
+// }
+
+// func findTrivySep(args []string) int {
+// 	for i, a := range args {
+// 		// trivy args separator is "--"
+// 		if a == "--" {
+// 			if i+1 >= len(args) {
+// 				return -1 // bad case if someone specifies no trivy args
+// 			} else {
+// 				return i + 1 // common case with good args
+// 			}
+// 		}
+// 	}
+// 	return -1 // bad case if no trivy sep & args specified
+// }
+
+// func containsSlice(haystack []string, needle string) bool {
+// 	for _, item := range haystack {
+// 		if strings.Contains(item, needle) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
