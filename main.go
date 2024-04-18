@@ -77,7 +77,7 @@ func runScan(args []string, execCmd func(string, ...string) *exec.Cmd) error {
 
 	log.Println("creating the ignore file")
 	path := trivyArgs[2]
-	replacer := strings.NewReplacer(":", "", ".", "")
+	replacer := strings.NewReplacer(":", "")
 	cve, err := getCVEs("http://localhost", "3000", replacer.Replace(path))
 	if err != nil && errors.Is(err, syscall.ECONNREFUSED) {
 		log.Println("could not contact the server - is the server reachable?:", err)
