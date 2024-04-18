@@ -55,7 +55,7 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 
 	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
-		log.Println(err)
+		return nil, err
 	}
 	out := fmt.Sprintf("#cves for %s\n", data.Project)
 	for _, cve := range data.Cves {
