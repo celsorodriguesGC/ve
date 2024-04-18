@@ -42,7 +42,7 @@ func getCVEs(serverAddress, serverPort, projectName string) ([]byte, error) {
 	data := Data{}
 	client := http.Client{}
 	url := fmt.Sprintf("%s:%s/%s", serverAddress, serverPort, projectName)
-
+	fmt.Println("URL is:", url)
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, err
